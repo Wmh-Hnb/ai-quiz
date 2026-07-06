@@ -409,7 +409,6 @@ def extract_json(text: str) -> dict:
     # Remove markdown code blocks
     text = text.strip()
     if text.startswith("```"):
-        # Remove ```json or ``` markers
         lines = text.split("\n")
         if lines[0].startswith("```"):
             lines = lines[1:]
@@ -422,11 +421,15 @@ def extract_json(text: str) -> dict:
 
     if json_start != -1 and json_end > json_start:
         json_str = text[json_start:json_end]
+        # Try json5 first (lenient), then standard json
         try:
-            return json.loads(json_str)
-        except json.JSONDecodeError as e:
-            # Try to fix common issues: trailing commas, missing commas
-            return {"error": f"JSON解析失败: {str(e)}", "raw": text[:500]}
+            import json5
+            return json5.loads(json_str)
+        except Exception:
+            try:
+                return json.loads(json_str)
+            except json.JSONDecodeError as e:
+                return {"error": f"JSON解析失败: {str(e)}", "raw": text[:500]}
 
     return {"error": "无法解析返回结果", "raw": text[:500]}
 
