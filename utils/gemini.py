@@ -175,9 +175,10 @@ def deepseek_generate_from_messages(messages: list[dict], model: str | None = No
     payload = {
         "model": model_name,
         "messages": messages,
-        "stream": False
+        "stream": False,
+        "max_tokens": 8192
     }
-    response = requests.post(f"{DEEPSEEK_BASE_URL}/chat/completions", json=payload, headers=headers)
+    response = requests.post(f"{DEEPSEEK_BASE_URL}/chat/completions", json=payload, headers=headers, timeout=120)
     if not response.ok:
         raise ValueError(f"DeepSeek 请求失败: {response.status_code} {response.text}")
     data = response.json()
