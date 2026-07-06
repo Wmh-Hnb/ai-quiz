@@ -30,7 +30,8 @@ provider = get_provider_with_key(selected_provider)
 provider_labels = {
     "gemini": "Gemini",
     "glm": "GLM",
-    "nvidia": "NVIDIA"
+    "nvidia": "NVIDIA",
+    "deepseek": "DeepSeek"
 }
 
 if not provider:
