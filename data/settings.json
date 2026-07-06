@@ -1,11 +1,11 @@
 {
-  "provider": "gemini",
+  "provider": "glm",
   "gemini": {
     "api_key": "",
     "model": "gemini-2.5-flash"
   },
   "glm": {
-    "api_key": "",
+    "api_key": "04ed2dcdfcf74c89953269b4f8f5aae6.FSrgeOiz72cvo7WD",
     "model": "glm-4.7"
   },
   "nvidia": {
