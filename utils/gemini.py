@@ -23,8 +23,14 @@ DEFAULT_SETTINGS = {
     "nvidia": {
         "api_key": "",
         "model": "z-ai/glm4.7"
+    },
+    "deepseek": {
+        "api_key": "",
+        "model": "deepseek-chat"
     }
 }
+
+DEEPSEEK_BASE_URL = "https://api.deepseek.com/v1"
 
 
 def load_settings() -> dict:
@@ -57,7 +63,7 @@ def get_provider_with_key(preferred: str | None = None) -> str | None:
     order = []
     if preferred:
         order.append(preferred)
-    order.extend(["gemini", "glm", "nvidia"])
+    order.extend(["gemini", "glm", "nvidia", "deepseek"])
     seen = set()
     for provider in order:
         if provider in seen:
@@ -79,6 +85,10 @@ def get_glm_config() -> dict:
 
 def get_nvidia_config() -> dict:
     return load_settings().get("nvidia", {})
+
+
+def get_deepseek_config() -> dict:
+    return load_settings().get("deepseek", {})
 
 
 GLM_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
@@ -152,12 +162,43 @@ def nvidia_generate_content(prompt: str) -> str:
     return nvidia_generate_from_messages([{"role": "user", "content": prompt}])
 
 
+def deepseek_generate_from_messages(messages: list[dict], model: str | None = None) -> str:
+    ds_cfg = get_deepseek_config()
+    api_key = ds_cfg.get("api_key", "")
+    model_name = model or ds_cfg.get("model", "deepseek-chat")
+    if not api_key:
+        raise ValueError("未配置 DeepSeek API Key")
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": model_name,
+        "messages": messages,
+        "stream": False
+    }
+    response = requests.post(f"{DEEPSEEK_BASE_URL}/chat/completions", json=payload, headers=headers)
+    if not response.ok:
+        raise ValueError(f"DeepSeek 请求失败: {response.status_code} {response.text}")
+    data = response.json()
+    choices = data.get("choices", [])
+    if not choices:
+        raise ValueError("DeepSeek 返回内容为空")
+    return choices[0].get("message", {}).get("content", "")
+
+
+def deepseek_generate_content(prompt: str) -> str:
+    return deepseek_generate_from_messages([{"role": "user", "content": prompt}])
+
+
 def generate_text(prompt: str) -> str:
     provider = get_provider_with_key(get_active_provider())
     if provider == "glm":
         return glm_generate_content(prompt)
     if provider == "nvidia":
         return nvidia_generate_content(prompt)
+    if provider == "deepseek":
+        return deepseek_generate_content(prompt)
     if provider == "gemini":
         model = get_model()
         response = model.generate_content(prompt)
@@ -537,6 +578,9 @@ def check_api_key() -> bool:
             return True
         if provider == "nvidia":
             _ = nvidia_generate_content("你好")
+            return True
+        if provider == "deepseek":
+            _ = deepseek_generate_content("你好")
             return True
         model = get_model()
         model.generate_content("你好")
