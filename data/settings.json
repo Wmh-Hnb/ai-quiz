@@ -1,5 +1,5 @@
 {
-  "provider": "glm",
+  "provider": "deepseek",
   "gemini": {
     "api_key": "",
     "model": "gemini-2.5-flash"
@@ -13,7 +13,7 @@
     "model": "z-ai/glm4.7"
   },
   "deepseek": {
-    "api_key": "",
+    "api_key": "sk-7b560f0fa55d4fb0b54002705d3deb50",
     "model": "deepseek-chat"
   }
 }
