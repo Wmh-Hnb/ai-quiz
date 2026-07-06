@@ -159,7 +159,7 @@ elif st.session_state.exam_state["started"] and not st.session_state.exam_state[
     </div>
     """, unsafe_allow_html=True)
     
-        if question.type in ("选择题", "单选题"):
+    if question.type in ("选择题", "单选题"):
         options = question.get_options_list()
         option_labels = [opt.split(".")[0] if "." in opt else opt[0] for opt in options]
 
@@ -388,7 +388,7 @@ elif st.session_state.exam_state["finished"]:
                             mark_question_mastered(question.id)
                         else:
                             add_wrong_question(question.id, user_answer)
-                elif question.type == "判断题":
+            elif question.type == "判断题":
                     user_clean = user_answer.strip()
                     correct_clean = question.answer.strip()
                     is_correct = (user_clean == "对" and (correct_clean in ("对", "正确", "T", "t", "true", "True"))) or (user_clean == "错" and (correct_clean in ("错", "错误", "F", "f", "false", "False")))
@@ -404,7 +404,7 @@ elif st.session_state.exam_state["finished"]:
                             mark_question_mastered(question.id)
                         else:
                             add_wrong_question(question.id, user_answer)
-                elif question.type == "多选题":
+            elif question.type == "多选题":
                     correct_set = set(question.answer.strip().upper().replace(" ", "").split(","))
                     user_set = set(user_answer.strip().upper().replace(" ", "").replace("，", ",").split(","))
                     is_correct = user_set == correct_set
@@ -421,8 +421,8 @@ elif st.session_state.exam_state["finished"]:
                             mark_question_mastered(question.id)
                         else:
                             add_wrong_question(question.id, user_answer)
-                else:
-                    st.error(user_ans if user_ans else "未作答")
+            else:
+                st.error(user_ans if user_ans else "未作答")
             
             with c2:
                 st.markdown("**标准答案**")
