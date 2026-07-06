@@ -429,7 +429,13 @@ def extract_json(text: str) -> dict:
             try:
                 return json.loads(json_str)
             except json.JSONDecodeError as e:
-                return {"error": f"JSON解析失败: {str(e)}", "raw": text[:500]}
+                # Last resort: try to repair broken JSON
+                try:
+                    from json_repair import repair_json
+                    repaired = repair_json(json_str)
+                    return json.loads(repaired)
+                except Exception:
+                    return {"error": f"JSON解析失败: {str(e)}", "raw": text[:500]}
 
     return {"error": "无法解析返回结果", "raw": text[:500]}
 
