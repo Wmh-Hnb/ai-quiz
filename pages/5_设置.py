@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from utils.gemini import load_settings, save_settings, GLM_BASE_URL
+from utils.gemini import load_settings, save_settings, GLM_BASE_URL, DEEPSEEK_BASE_URL
 from utils.ui import inject_custom_css
 import requests
 
@@ -20,7 +20,7 @@ settings = load_settings()
 with st.container():
     col_prov, col_act = st.columns([2, 1])
     with col_prov:
-        provider_options = ["gemini", "glm", "nvidia"]
+        provider_options = ["gemini", "glm", "nvidia", "deepseek"]
         current_provider = settings.get("provider", "gemini")
         provider_index = provider_options.index(current_provider) if current_provider in provider_options else 0
         
@@ -37,7 +37,7 @@ with st.container():
 
 st.markdown("---")
 
-tab_gemini, tab_glm, tab_nvidia = st.tabs(["Gemini 配置", "GLM 配置", "NVIDIA 配置"])
+tab_gemini, tab_glm, tab_nvidia, tab_deepseek = st.tabs(["Gemini 配置", "GLM 配置", "NVIDIA 配置", "DeepSeek 配置"])
 
 with tab_gemini:
     col1, col2 = st.columns(2)
@@ -150,6 +150,52 @@ with tab_nvidia:
             except Exception as e:
                 st.error(f"❌ 错误: {str(e)}")
 
+with tab_deepseek:
+    col1, col2 = st.columns(2)
+    with col1:
+        ds_api_key = st.text_input(
+            "API Key",
+            type="password",
+            value=settings.get("deepseek", {}).get("api_key", ""),
+            placeholder="sk-..."
+        )
+    with col2:
+        ds_model = st.selectbox(
+            "模型选择",
+            ["deepseek-chat", "deepseek-reasoner"],
+            index=0
+        )
+    st.caption("获取 Key: [DeepSeek Platform](https://platform.deepseek.com/)")
+
+    if st.button("测试 DeepSeek 连接", key="test_deepseek"):
+        api_key = (ds_api_key or "").strip()
+        if not api_key:
+            st.error("请先填写 DeepSeek API Key")
+        else:
+            try:
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": ds_model,
+                    "messages": [{"role": "user", "content": "你好"}],
+                    "stream": False
+                }
+                with st.spinner("连接中..."):
+                    resp = requests.post(
+                        f"{DEEPSEEK_BASE_URL}/chat/completions",
+                        json=payload,
+                        headers=headers,
+                        timeout=10
+                    )
+                if resp.ok:
+                    st.success("✅ 连接成功")
+                else:
+                    st.error(f"❌ 失败: {resp.status_code} {resp.text[:200]}")
+            except Exception as e:
+                st.error(f"❌ 错误: {str(e)}")
+
 if save_btn:
     new_settings = {
         "provider": provider,
@@ -164,6 +210,10 @@ if save_btn:
         "nvidia": {
             "api_key": (nv_api_key or "").strip(),
             "model": nv_model or "z-ai/glm4.7"
+        },
+        "deepseek": {
+            "api_key": (ds_api_key or "").strip(),
+            "model": ds_model or "deepseek-chat"
         }
     }
     save_settings(new_settings)
