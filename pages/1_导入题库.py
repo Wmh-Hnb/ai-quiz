@@ -104,30 +104,26 @@ with tab3:
         st.markdown("#### 题目配置")
         
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
-            num_single = st.number_input("单选题", min_value=0, max_value=20, value=3)
+            num_single = st.number_input("单选题", min_value=0, max_value=20, value=3, key="gen_single")
         with col2:
-            num_multi = st.number_input("多选题", min_value=0, max_value=20, value=2)
+            num_multi = st.number_input("多选题", min_value=0, max_value=20, value=2, key="gen_multi")
         with col3:
-            num_definition = st.number_input("名词解释", min_value=0, max_value=10, value=2)
+            num_judge = st.number_input("判断题", min_value=0, max_value=20, value=3, key="gen_judge")
         with col4:
-            num_short = st.number_input("简答题", min_value=0, max_value=10, value=2)
-        with col3:
-            num_judge = st.number_input("判断题", min_value=0, max_value=20, value=3)
-        with col4:
-            num_fill = st.number_input("填空题", min_value=0, max_value=20, value=2)
+            num_fill = st.number_input("填空题", min_value=0, max_value=20, value=2, key="gen_fill")
 
         col5, col6, col7, col8 = st.columns(4)
 
         with col5:
-            num_definition = st.number_input("名词解释", min_value=0, max_value=10, value=2)
+            num_definition = st.number_input("名词解释", min_value=0, max_value=10, value=2, key="gen_def")
         with col6:
-            num_short = st.number_input("简答题", min_value=0, max_value=10, value=2)
+            num_short = st.number_input("简答题", min_value=0, max_value=10, value=2, key="gen_short")
         with col7:
-            num_essay = st.number_input("论述题", min_value=0, max_value=5, value=1)
+            num_essay = st.number_input("论述题", min_value=0, max_value=5, value=1, key="gen_essay")
         with col8:
-            num_case = st.number_input("病例分析题", min_value=0, max_value=5, value=1)
+            num_case = st.number_input("病例分析题", min_value=0, max_value=5, value=1, key="gen_case")
     
     st.markdown("")
     if keywords:
