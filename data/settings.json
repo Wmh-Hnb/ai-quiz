@@ -9,7 +9,11 @@
     "model": "glm-4.7"
   },
   "nvidia": {
-    "api_key": "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",
+    "api_key": "",
     "model": "z-ai/glm4.7"
+  },
+  "deepseek": {
+    "api_key": "",
+    "model": "deepseek-chat"
   }
 }
