@@ -460,7 +460,9 @@ def parse_questions_from_file(file_bytes: bytes, file_type: str) -> dict:
         except Exception as e:
             return {"error": f"解析Word文档失败: {str(e)}"}
 
-    if provider in ("glm", "nvidia"):
+    if provider in ("glm", "nvidia", "deepseek"):
+        if provider == "deepseek" and file_type in ("png", "jpg", "jpeg"):
+            return {"error": "DeepSeek 不支持图片识别，请上传 PDF 或 Word 文档，或在设置中切换到 GLM/Gemini"}
         if file_type == "pdf":
             try:
                 text = extract_text_from_pdf(file_bytes)
@@ -488,6 +490,8 @@ def parse_questions_from_file(file_bytes: bytes, file_type: str) -> dict:
                 ]
                 if provider == "glm":
                     result = glm_generate_from_messages(messages)
+                elif provider == "deepseek":
+                    result = deepseek_generate_from_messages(messages)
                 else:
                     result = nvidia_generate_from_messages(messages)
                 return extract_json(result)
