@@ -192,7 +192,7 @@ else:
                         st.session_state.practice_state["started"] = False
                         st.rerun()
 
-            	elif not st.session_state.practice_state["answered"]:
+            elif not st.session_state.practice_state["answered"]:
                 if question.type in ("选择题", "单选题", "多选题"):
                     options = question.get_options_list()
                     option_labels = [opt.split(".")[0] if "." in opt else opt[0] for opt in options]
@@ -254,7 +254,7 @@ else:
                         elif is_correct and question.id:
                             mark_question_mastered(question.id)
                         st.rerun()
-elif question.type == "填空题":
+                elif question.type == "填空题":
                     user_answer = st.text_input("请填写答案（多个空用逗号分隔）：")
                     
                     col_exit, col_submit = st.columns([1, 3])
